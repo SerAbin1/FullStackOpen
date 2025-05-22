@@ -10,16 +10,20 @@ const App = () => {
     setNewName(e.target.value)
   }
 
-  const addName = (e) => {
+  const addPerson= (e) => {
     e.preventDefault()
-    const pers = persons.concat({ name: newName })
-    setPersons(pers)
+    if (persons.some(person => person.name === newName)) {
+      return alert(`${newName} is already added`)
+    } else {
+      const pers = persons.concat({ name: newName })
+      setPersons(pers)
+    }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
+      <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handleNewname}/>
         </div>
