@@ -25,14 +25,20 @@ const App = () => {
     const rand = Math.floor(Math.random() * anecdotes.length)
     setSelected(rand)
   }
-
+  
+  const mostVotes = Math.max(...votes)
+  const maxIndex = votes.indexOf(mostVotes)
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
       <button onClick={handleVote}>vote</button>
       <button onClick={handleNext}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[maxIndex]}</p>
+      <p>has {mostVotes} votes</p>
     </div>
   )
 }
