@@ -1,60 +1,86 @@
 import { useState } from 'react'
 
+const Filter = ({ searchTerm, handleSearchChange }) => (
+  <div>
+    filter shown with <input value={searchTerm} onChange={handleSearchChange} />
+  </div>
+)
+
+const PersonForm = ({
+  newName,
+  newNumber,
+  handleNewname,
+  handleNewNumber,
+  addPerson
+}) => (
+  <form onSubmit={addPerson}>
+    <div>
+      name: <input value={newName} onChange={handleNewname} />
+    </div>
+    <div>
+      number: <input value={newNumber} onChange={handleNewNumber} />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
+)
+
+const Persons = ({ personsToShow }) => (
+  <>
+    {personsToShow.map((person) => (
+      <p key={person.name}>
+        {person.name} {person.number}
+      </p>
+    ))}
+  </>
+)
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-1234567' }
-  ]) 
+  ])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const handleNewname = (e) => {
-    setNewName(e.target.value)
-  }
-
-  const handleNewNumber = (e) => {
-    setNewNumber(e.target.value)
-  }
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value)
-  }
+  const handleNewname = (e) => setNewName(e.target.value)
+  const handleNewNumber = (e) => setNewNumber(e.target.value)
+  const handleSearchChange = (e) => setSearchTerm(e.target.value)
 
   const addPerson = (e) => {
     e.preventDefault()
-    if (persons.some(person => person.name === newName)) {
-      return alert(`${newName} is already added`)
-    } else {
-      const pers = persons.concat({ name: newName, number: newNumber })
-      setPersons(pers)
+    if (persons.some((person) => person.name === newName)) {
+      alert(`${newName} is already added`)
+      return
     }
+    const pers = persons.concat({ name: newName, number: newNumber })
+    setPersons(pers)
+    setNewName('')
+    setNewNumber('')
   }
+
+  const personsToShow = persons.filter((person) =>
+    person.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+  )
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input value={searchTerm} onChange={handleSearch} />
-      </div>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNewname} />
-          <div>number: <input value={newNumber} onChange={handleNewNumber} /></div>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {persons
-        .filter(person =>
-          person.name.toLowerCase().startsWith(searchTerm.toLowerCase())
-        )
-        .map(person =>
-          <p key={person.name}>{person.name} {person.number}</p>
-        )
-      }
+      <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
+
+      <h3>Add a new</h3>
+      <PersonForm
+        newName={newName}
+        newNumber={newNumber}
+        handleNewname={handleNewname}
+        handleNewNumber={handleNewNumber}
+        addPerson={addPerson}
+      />
+
+      <h3>Numbers</h3>
+      <Persons personsToShow={personsToShow} />
     </div>
   )
 }
