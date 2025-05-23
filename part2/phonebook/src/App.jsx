@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Filter = ({ searchTerm, handleSearchChange }) => (
   <div>
@@ -49,6 +50,14 @@ const App = () => {
   const handleNewNumber = (e) => setNewNumber(e.target.value)
   const handleSearchChange = (e) => setSearchTerm(e.target.value)
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
+  
   const addPerson = (e) => {
     e.preventDefault()
     if (persons.some((person) => person.name === newName)) {
