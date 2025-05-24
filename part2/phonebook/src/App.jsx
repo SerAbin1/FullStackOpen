@@ -60,10 +60,27 @@ const App = () => {
   
   const addPerson = (e) => {
     e.preventDefault()
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added`)
-      return
+    if (persons.some((person) => person.name === newName) && newNumber !== '') {
+      const existingPerson = persons.find(p => p.name === newName)
+      const updatedPerson = { ...existingPerson, number: newNumber }
+
+      if (window.confirm(`${newName} already exists. Replace the old number with a new one?`)) {
+        service
+          .updateNum(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            console.log(returnedPerson)
+            setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            alert(`${newName} was already deleted from the server`)
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+          })
+      }
+    return
     }
+
     const pers = { name: newName, number: newNumber }
     setNewName('')
     setNewNumber('')
