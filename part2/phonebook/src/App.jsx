@@ -27,11 +27,11 @@ const PersonForm = ({
   </form>
 )
 
-const Persons = ({ personsToShow }) => (
+const Persons = ({ personsToShow, deletePerson }) => (
   <>
     {personsToShow.map((person) => (
       <p key={person.name}>
-        {person.name} {person.number}
+        {person.name} {person.number} {<button onClick={() => deletePerson(person.id, person.name)}>delete</button>}
       </p>
     ))}
   </>
@@ -75,6 +75,17 @@ const App = () => {
       })
   }
 
+  const deletePersonOf = (id, name) => {
+    if(window.confirm(`Do you really want to delete ${name}?`)){
+      service
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id))
+        })
+    }
+    
+  }
+
   const personsToShow = persons.filter((person) =>
     person.name.toLowerCase().startsWith(searchTerm.toLowerCase())
   )
@@ -94,7 +105,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deletePerson={deletePersonOf} />
     </div>
   )
 }
