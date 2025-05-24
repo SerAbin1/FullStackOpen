@@ -64,10 +64,16 @@ const App = () => {
       alert(`${newName} is already added`)
       return
     }
-    const pers = persons.concat({ name: newName, number: newNumber })
-    setPersons(pers)
+    const pers = { name: newName, number: newNumber }
     setNewName('')
     setNewNumber('')
+
+    axios
+      .post("http://localhost:3001/persons", pers)
+      .then(response => {
+        console.log(response)
+        setPersons(persons.concat(response.data))
+      })
   }
 
   const personsToShow = persons.filter((person) =>
