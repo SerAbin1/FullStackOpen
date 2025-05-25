@@ -56,7 +56,10 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-            alert(`${newName} was already deleted from the server`)
+            setMessage(`Information of ${newName} has already been removed from server`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
             setPersons(persons.filter(p => p.id !== existingPerson.id))
           })
       }
@@ -83,6 +86,10 @@ const App = () => {
       service
         .deletePerson(id)
         .then(() => {
+          setMessage(`Successfully removed ${name} from server`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
           setPersons(persons.filter(p => p.id !== id))
         })
     }
