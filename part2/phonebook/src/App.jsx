@@ -1,31 +1,8 @@
 import { useState, useEffect } from 'react'
 import service from './services/persons'
-
-const Filter = ({ searchTerm, handleSearchChange }) => (
-  <div>
-    filter shown with <input value={searchTerm} onChange={handleSearchChange} />
-  </div>
-)
-
-const PersonForm = ({
-  newName,
-  newNumber,
-  handleNewname,
-  handleNewNumber,
-  addPerson
-}) => (
-  <form onSubmit={addPerson}>
-    <div>
-      name: <input value={newName} onChange={handleNewname} />
-    </div>
-    <div>
-      number: <input value={newNumber} onChange={handleNewNumber} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-)
+import Notification from './components/Notification'
+import Filter from './components/Filter'
+import PersonForm from './components/personForm'
 
 const Persons = ({ personsToShow, deletePerson }) => (
   <>
@@ -45,6 +22,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [message, setMessage] = useState(null)
 
   const handleNewname = (e) => setNewName(e.target.value)
   const handleNewNumber = (e) => setNewNumber(e.target.value)
@@ -70,6 +48,10 @@ const App = () => {
           .then(returnedPerson => {
             console.log(returnedPerson)
             setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+            setMessage(`Updated ${newName}'s number`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
             setNewName('')
             setNewNumber('')
           })
@@ -82,13 +64,17 @@ const App = () => {
     }
 
     const pers = { name: newName, number: newNumber }
-    setNewName('')
-    setNewNumber('')
     
     service
       .create(pers)
       .then(person => {
         setPersons(persons.concat(person))
+        setMessage(`Added ${newName}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
       })
   }
 
@@ -110,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
 
       <h3>Add a new</h3>
