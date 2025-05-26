@@ -22,6 +22,12 @@ const App = () => {
   } 
 
   useEffect(() => {
+    if (value === '') {
+      setFiltered([]);
+      setError(null);
+      return;
+    }
+
     const filter = countries.filter((country) => country.name.common.toLowerCase().includes(value.toLowerCase()))
     if (filter.length > 10) {
       setError("Too many matches, specify another filter")
