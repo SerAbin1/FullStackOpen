@@ -3,11 +3,8 @@ const morgan = require('morgan');
 const app = express();
 app.use(express.json());
 
-morgan.token('body', function getBody (req) {
-  return JSON.stringify(req.body)
-})
 app.use(morgan('tiny'))
-app.use(morgan(':body'))
+
 
 let phonebook = [
     { 
@@ -60,6 +57,8 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+app.use(morgan(':body'))
+
 app.post('/api/persons', (req, res) => {
   const person = req.body;
 
@@ -91,3 +90,8 @@ app.listen(PORT, () => {
 function generateId() {
   return Math.floor(Math.random() * 1884348).toString()
 }
+
+morgan.token('body', function getBody (req) {
+  return JSON.stringify(req.body)
+})
+
