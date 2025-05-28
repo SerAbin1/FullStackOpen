@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 let phonebook = [
     { 
@@ -52,7 +53,30 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+app.post('/api/persons', (req, res) => {
+  const person = req.body;
+
+  if(!person.name) {
+    return res.status(400).json({ error: "content missing" })
+  }
+
+  const entry = {
+    id: generateId(),
+    name: person.name,
+    number: person.number || 0,
+  }
+
+  phonebook = phonebook.concat(entry)
+
+  res.json(entry)
+
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })
+
+function generateId() {
+  return Math.floor(Math.random() * 1884348).toString()
+}
