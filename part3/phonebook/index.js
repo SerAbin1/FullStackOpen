@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const phonebook = [
+let phonebook = [
     { 
       "id": "1",
       "name": "Arto Hellas", 
@@ -43,6 +43,13 @@ app.get('/api/persons/:id', (req, res) => {
   }
 
   res.send(person)
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+  const id = req.params.id;
+  phonebook = phonebook.filter(p => p.id !== id)
+
+  res.status(204).end()
 })
 
 const PORT = 3001
