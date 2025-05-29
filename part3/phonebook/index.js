@@ -21,9 +21,6 @@ app.get('/info', (req, res) => {
   .then(count => {
     res.send(`Phonebook has info for ${count} people\n${new Date() }`)
    })
-  /*const info = `Phonebook has info for ${phonebook.length} people`
-  const time = new Date()
-  res.send(info + time)*/
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -48,7 +45,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 
 app.use(morgan(':body'))
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const person = req.body;
 
   if (!person.name || !person.number) {
@@ -60,9 +57,11 @@ app.post('/api/persons', (req, res) => {
     number: person.number || 0,
   })
 
-  entry.save().then(savedEntry => {
-    res.json(savedEntry)
-  })
+  entry.save()
+    .then(savedEntry => {
+      res.json(savedEntry)
+    })
+    .catch(err => next(err))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -90,6 +89,8 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted' })
+  } else if (err.name === 'ValidationError') {
+    return res.status(400).json({ error: err.message })
   }
 
   next(err)
