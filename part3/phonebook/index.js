@@ -17,12 +17,16 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  const info = `Phonebook has info for ${phonebook.length} people`
+  Person.countDocuments()
+  .then(count => {
+    res.send(`Phonebook has info for ${count} people\n${new Date() }`)
+   })
+  /*const info = `Phonebook has info for ${phonebook.length} people`
   const time = new Date()
-  res.send(info + time)
+  res.send(info + time)*/
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
     .then(foundPerson => {
       if (foundPerson) {
