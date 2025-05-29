@@ -70,7 +70,7 @@ app.put('/api/persons/:id', (req, res, next) => {
   Person.findOneAndUpdate(
     { name: person.name },
     { number: person.number || 0 },
-    { new: true, upsert: true }
+    { new: true, upsert: true, runValidators: true }
   )
   .then(updatedDoc => {
     res.json(updatedDoc)
