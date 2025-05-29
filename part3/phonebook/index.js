@@ -49,7 +49,6 @@ app.post('/api/persons', (req, res) => {
   } */
 
   const entry = new Person({
-    id: generateId(),
     name: person.name,
     number: person.number || 0,
   })
@@ -63,10 +62,6 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })
-
-function generateId() {
-  return Math.floor(Math.random() * 1884348).toString()
-}
 
 morgan.token('body', function getBody (req) {
   return JSON.stringify(req.body)
