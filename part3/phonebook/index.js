@@ -51,10 +51,6 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: "content missing" })
   }
 
- /* if (phonebook.find(p => p.name === person.name)) {
-    return res.status(400).json({ error: "name must be unique" })
-  } */
-
   const entry = new Person({
     name: person.name,
     number: person.number || 0,
@@ -63,6 +59,20 @@ app.post('/api/persons', (req, res) => {
   entry.save().then(savedEntry => {
     res.json(savedEntry)
   })
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const person = req.body;
+
+  Person.findOneAndUpdate(
+    { name: person.name },
+    { number: person.number || 0 },
+    { new: true, upsert: true }
+  )
+  .then(updatedDoc => {
+    res.json(updatedDoc)
+  })
+  .catch(err => next(err))
 })
 
 const unknownEndpoint = (req, res) => {
