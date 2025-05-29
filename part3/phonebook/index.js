@@ -23,14 +23,9 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = req.params.id;
-  const person = phonebook.find(p => p.id === id)
-
-  if(!person) {
-    return res.status(204).end()
-  }
-
-  res.send(person)
+  Person.findById(req.params.id).then(foundPerson => {
+    res.json(foundPerson)
+  })  
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -49,20 +44,19 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: "content missing" })
   }
 
-  if (phonebook.find(p => p.name === person.name)) {
+ /* if (phonebook.find(p => p.name === person.name)) {
     return res.status(400).json({ error: "name must be unique" })
-  }
+  } */
 
-  const entry = {
+  const entry = new Person({
     id: generateId(),
     name: person.name,
     number: person.number || 0,
-  }
+  })
 
-  phonebook = phonebook.concat(entry)
-
-  res.json(entry)
-
+  entry.save().then(savedEntry => {
+    res.json(savedEntry)
+  })
 })
 
 const PORT = process.env.PORT || 3001
