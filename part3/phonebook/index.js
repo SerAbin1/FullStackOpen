@@ -31,10 +31,7 @@ app.get('/api/persons/:id', (req, res) => {
         res.status(404).end()
       }
     })
-    .catch(err => {
-      console.log(err)
-      res.status(400).send({ error: 'malformatted id' })
-    })
+    .catch(err => next(err))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -73,6 +70,18 @@ const unknownEndpoint = (req, res) => {
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message)
+
+  if (err.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted' })
+  }
+
+  next(err)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
