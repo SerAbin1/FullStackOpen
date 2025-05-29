@@ -18,9 +18,9 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/info', (req, res) => {
   Person.countDocuments()
-  .then(count => {
-    res.send(`Phonebook has info for ${count} people\n${new Date() }`)
-   })
+    .then(count => {
+      res.send(`Phonebook has info for ${count} people\n${new Date() }`)
+    })
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -37,7 +37,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(err => next(err))
@@ -46,10 +46,10 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.use(morgan(':body'))
 
 app.post('/api/persons', (req, res, next) => {
-  const person = req.body;
+  const person = req.body
 
   if (!person.name || !person.number) {
-    return res.status(400).json({ error: "content missing" })
+    return res.status(400).json({ error: 'content missing' })
   }
 
   const entry = new Person({
@@ -65,17 +65,17 @@ app.post('/api/persons', (req, res, next) => {
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
-  const person = req.body;
+  const person = req.body
 
   Person.findOneAndUpdate(
     { name: person.name },
     { number: person.number || 0 },
     { new: true, upsert: true, runValidators: true }
   )
-  .then(updatedDoc => {
-    res.json(updatedDoc)
-  })
-  .catch(err => next(err))
+    .then(updatedDoc => {
+      res.json(updatedDoc)
+    })
+    .catch(err => next(err))
 })
 
 const unknownEndpoint = (req, res) => {
