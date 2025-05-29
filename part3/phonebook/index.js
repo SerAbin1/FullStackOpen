@@ -23,17 +23,27 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  Person.findById(req.params.id).then(foundPerson => {
-    res.json(foundPerson)
-  })  
+  Person.findById(req.params.id)
+    .then(foundPerson => {
+      if (foundPerson) {
+        res.json(foundPerson)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(400).send({ error: 'malformatted id' })
+    })
 })
 
-/*app.delete('/api/persons/:id', (req, res) => {
-  const id = req.params.id;
-  phonebook = phonebook.filter(p => p.id !== id)
-
-  res.status(204).end()
-})*/
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndDelete(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(err => next(err))
+})
 
 app.use(morgan(':body'))
 
@@ -57,6 +67,12 @@ app.post('/api/persons', (req, res) => {
     res.json(savedEntry)
   })
 })
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
