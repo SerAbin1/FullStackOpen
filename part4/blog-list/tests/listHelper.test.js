@@ -143,7 +143,7 @@ describe("favorite", () => {
   });
 });
 
-describe("most", () => {
+describe("mostBlogs", () => {
   test("when only one, that", () => {
     assert.deepStrictEqual(listHelper.mostBlogs(blog), { author: "Michael Chan", blogs: 1 })
   })
@@ -152,3 +152,20 @@ describe("most", () => {
     assert.deepStrictEqual(listHelper.mostBlogs(blogs), { author: "Robert C. Martin", blogs: 3 })
   })
 })
+
+describe("mostLikes", () => {
+  test("when only one blog, return its author and likes", () => {
+    assert.deepStrictEqual(listHelper.mostLikes(blog), {
+      author: blogs[0].author,
+      likes: blogs[0].likes,
+    });
+  });
+
+  test("when many blogs, return author with most total likes", () => {
+    assert.deepStrictEqual(listHelper.mostLikes(blogs), {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
+    });
+  });
+});
+
