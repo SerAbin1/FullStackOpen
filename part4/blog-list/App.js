@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const blogRouter = require("./controllers/blogs");
 const config = require("./utils/config");
-const logger = require('./utils/requestLogger');
+const logger = require("./utils/logger");
+const middleware = require("./utils/middleware");
 const mongoose = require("mongoose");
 
 mongoose.set("strictQuery", false);
@@ -19,6 +20,11 @@ mongoose
 
 app.use(express.json());
 
+app.use(middleware.requestLogger);
+
 app.use("/api/blogs", blogRouter);
+
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 module.exports = app;
