@@ -114,6 +114,16 @@ describe("deletion", () => {
   })
 })
 
+test("updation works", async () => {
+    await api.put(`/api/blogs/${initialBlogs[0]._id}`)
+    .send({likes: 10})
+    .expect(204)
+
+    const res = await api.get('/api/blogs')
+    const updated = res.body.find(blog => blog.id === initialBlogs[0]._id)
+    assert.strictEqual(updated.likes, 10)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
