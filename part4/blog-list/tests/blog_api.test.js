@@ -1,9 +1,9 @@
-const assert = require('node:assert')
+const assert = require("node:assert")
 const { test, after, beforeEach } = require("node:test")
 const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../App")
-const Blog = require('../models/blog')
+const Blog = require("../models/blog")
 
 const api = supertest(app)
 
@@ -14,7 +14,7 @@ const initialBlogs = [
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
     likes: 7,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422aa71b54a676234d17f8",
@@ -22,8 +22,8 @@ const initialBlogs = [
     author: "Edsger W. Dijkstra",
     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 5,
-    __v: 0
-  }
+    __v: 0,
+  },
 ]
 
 beforeEach(async () => {
@@ -41,10 +41,20 @@ test("notes are returned as json", async () => {
     .expect("Content-Type", /application\/json/)
 })
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
+test("all blogs are returned", async () => {
+  const response = await api.get("/api/blogs")
 
   assert.strictEqual(response.body.length, initialBlogs.length)
+})
+
+test("id is id, not _id", async () => {
+  const response = await api.get("/api/blogs")
+  const blogs = response.body
+
+  for (const blog of blogs) {
+    assert.ok(blog.id, "'id' should be defined")
+    assert.strictEqual(blog._id, undefined, "'_id' should be undefined")
+  }
 })
 
 after(async () => {
