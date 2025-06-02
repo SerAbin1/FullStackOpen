@@ -4,6 +4,7 @@ const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../App")
 const Blog = require("../models/blog")
+const { title } = require("node:process")
 
 const api = supertest(app)
 
@@ -55,6 +56,28 @@ test("id is id, not _id", async () => {
     assert.ok(blog.id, "'id' should be defined")
     assert.strictEqual(blog._id, undefined, "'_id' should be undefined")
   }
+})
+
+test('POST is successfull', async () => {
+  const blog = {
+    title: "bin Serr",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 3
+  }
+
+  await api
+    .post("/api/blogs")
+    .send(blog)
+    .expect(201)
+
+  const response = await api.get('/api/blogs')
+
+  const titles = response.body.map(r => r.title)
+
+  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+
+  assert(titles.includes('bin Serr'))
 })
 
 after(async () => {
