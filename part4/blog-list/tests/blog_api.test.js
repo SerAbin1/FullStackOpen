@@ -1,5 +1,5 @@
 const assert = require("node:assert")
-const { test, after, beforeEach } = require("node:test")
+const { test, after, beforeEach, describe } = require("node:test")
 const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../App")
@@ -58,39 +58,50 @@ test("id is id, not _id", async () => {
   }
 })
 
-test("POST is successfull", async () => {
-  const blog = {
-    title: "bin Serr",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 3,
-  }
+describe("POST", () => {
+  test("POST is successfull", async () => {
+    const blog = {
+      title: "bin Serr",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 3,
+    }
 
-  await api.post("/api/blogs").send(blog).expect(201)
+    await api.post("/api/blogs").send(blog).expect(201)
 
-  const response = await api.get("/api/blogs")
+    const response = await api.get("/api/blogs")
 
-  const titles = response.body.map((r) => r.title)
+    const titles = response.body.map((r) => r.title)
 
-  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+    assert.strictEqual(response.body.length, initialBlogs.length + 1)
 
-  assert(titles.includes("bin Serr"))
-})
+    assert(titles.includes("bin Serr"))
+  })
 
-test("likes property defaults to 0 if missing", async () => {
-  const blog = {
-    title: "bin Serr",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-  }
+  test("likes property defaults to 0 if missing", async () => {
+    const blog = {
+      title: "bin Serr",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+    }
 
-  const response = await api
-    .post("/api/blogs")
-    .send(blog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/)
+    const response = await api
+      .post("/api/blogs")
+      .send(blog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/)
 
-  assert.strictEqual(response.body.likes, 0)
+    assert.strictEqual(response.body.likes, 0)
+  })
+
+  test("title or url missing, 400 bad req response", async () => {
+    const blog = {
+      title: "bin Serr",
+      author: "Michael Chan",
+    }
+
+    await api.post("/api/blogs").send(blog).expect(400)
+  })
 })
 
 after(async () => {
