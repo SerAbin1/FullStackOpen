@@ -5,6 +5,11 @@ const bcrypt = require("bcrypt")
 userRouter.post("/", async (req, res) => {
   const { username, password, name } = req.body
 
+  if (!username || !password || password.length < 3 || username.length < 3) {
+    return res.status(400).json({ error: "Invalid username or password" })
+  }
+
+  console.log("only valid username", username)
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 

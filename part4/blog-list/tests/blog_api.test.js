@@ -4,7 +4,6 @@ const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../App")
 const Blog = require("../models/blog")
-const { title } = require("node:process")
 
 const api = supertest(app)
 
