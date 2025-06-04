@@ -1,9 +1,13 @@
 const assert = require("node:assert")
 const { test, after, beforeEach, describe } = require("node:test")
-const mongoose = require("mongoose")
 const supertest = require("supertest")
+const bcrypt = require("bcrypt")
+const mongoose = require('mongoose')
+const jwt = require("jsonwebtoken")
+
 const app = require("../App")
 const Blog = require("../models/blog")
+const User = require("../models/user")
 
 const api = supertest(app)
 
@@ -26,12 +30,28 @@ const initialBlogs = [
   },
 ]
 
+let token
+
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash("sekret", 10)
+  const user = new User({ username: "root", passwordHash })
+  const savedUser = await user.save()
+
+  const userForToken = {
+    username: savedUser.username,
+    id: savedUser._id,
+  }
+
+  token = jwt.sign(userForToken, process.env.SECRET)
+
+  const blog1 = new Blog({ ...initialBlogs[0], user: savedUser._id })
+  const blog2 = new Blog({ ...initialBlogs[1], user: savedUser._id })
+
+  await blog1.save()
+  await blog2.save()
 })
 
 test("notes are returned as json", async () => {
@@ -43,7 +63,6 @@ test("notes are returned as json", async () => {
 
 test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs")
-
   assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
@@ -58,7 +77,7 @@ test("id is id, not _id", async () => {
 })
 
 describe("POST", () => {
-  test("POST is successfull", async () => {
+  test("POST is successful with valid token", async () => {
     const blog = {
       title: "bin Serr",
       author: "Michael Chan",
@@ -66,15 +85,28 @@ describe("POST", () => {
       likes: 3,
     }
 
-    await api.post("/api/blogs").send(blog).expect(201)
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(blog)
+      .expect(201)
 
     const response = await api.get("/api/blogs")
-
     const titles = response.body.map((r) => r.title)
 
     assert.strictEqual(response.body.length, initialBlogs.length + 1)
-
     assert(titles.includes("bin Serr"))
+  })
+
+  test("POST fails with 401 if token not provided", async () => {
+    const blog = {
+      title: "bin Serr",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 3,
+    }
+
+    await api.post("/api/blogs").send(blog).expect(401)
   })
 
   test("likes property defaults to 0 if missing", async () => {
@@ -86,6 +118,7 @@ describe("POST", () => {
 
     const response = await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(blog)
       .expect(201)
       .expect("Content-Type", /application\/json/)
@@ -99,28 +132,38 @@ describe("POST", () => {
       author: "Michael Chan",
     }
 
-    await api.post("/api/blogs").send(blog).expect(400)
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(blog)
+      .expect(400)
   })
 })
 
 describe("deletion", () => {
-  test("deletion works", async () => {
-    await api.delete(`/api/blogs/${initialBlogs[0]._id}`)
-    .expect(204)
+  test("deletion works with valid token and ownership", async () => {
+    const blogsAtStart = await api.get("/api/blogs")
+    const blogToDelete = blogsAtStart.body[0]
 
-    const res = await api.get('/api/blogs')
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204)
+
+    const res = await api.get("/api/blogs")
     assert.strictEqual(res.body.length, initialBlogs.length - 1)
   })
 })
 
 test("updation works", async () => {
-    await api.put(`/api/blogs/${initialBlogs[0]._id}`)
-    .send({likes: 10})
-    .expect(204)
+  const blogsAtStart = await api.get("/api/blogs")
+  const blogToUpdate = blogsAtStart.body[0]
 
-    const res = await api.get('/api/blogs')
-    const updated = res.body.find(blog => blog.id === initialBlogs[0]._id)
-    assert.strictEqual(updated.likes, 10)
+  await api.put(`/api/blogs/${blogToUpdate.id}`).send({ likes: 10 }).expect(204)
+
+  const res = await api.get("/api/blogs")
+  const updated = res.body.find((blog) => blog.id === blogToUpdate.id)
+  assert.strictEqual(updated.likes, 10)
 })
 
 after(async () => {

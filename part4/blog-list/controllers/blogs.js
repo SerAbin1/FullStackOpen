@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 const Blog = require("../models/blog")
 const User = require("../models/user")
 const blogRouter = require("express").Router()
+const middleware = require("../utils/middleware")
 
 blogRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", {
@@ -13,7 +14,7 @@ blogRouter.get("/", async (request, response) => {
   response.json(blogs)
 })
 
-blogRouter.post("/", async (request, response) => {
+blogRouter.post("/", middleware.userExtractor, async (request, response) => {
   const user = await User.findById(request.user)
 
   if (!user) {
@@ -29,18 +30,19 @@ blogRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogRouter.delete("/:id", async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
+blogRouter.delete("/:id", middleware.userExtractor, async (request, response) => {
+    const blog = await Blog.findById(request.params.id)
 
-  if (blog.user.toString() === request.user.id.toString()) {
-    await Blog.findByIdAndDelete(request.params.id)
-  } else {
-    return response
-      .status(401)
-      .json({ error: "You are not authorized to delete this blog" })
-  }
-  response.status(204).end()
-})
+    if (blog.user.toString() === request.user.id.toString()) {
+      await Blog.findByIdAndDelete(request.params.id)
+    } else {
+      return response
+        .status(401)
+        .json({ error: "You are not authorized to delete this blog" })
+    }
+    response.status(204).end()
+  },
+)
 
 blogRouter.put("/:id", async (request, response) => {
   await Blog.findByIdAndUpdate(request.params.id, request.body)
