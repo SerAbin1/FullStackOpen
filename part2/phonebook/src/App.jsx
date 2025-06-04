@@ -79,6 +79,12 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      .catch(err => {
+        setMessage(err.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
   }
 
   const deletePersonOf = (id, name) => {
