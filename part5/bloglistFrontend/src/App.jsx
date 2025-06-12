@@ -34,7 +34,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     } catch (exception) {
-      setErrorMessage("wrong credentials")
+      setErrorMessage("wrong username or password")
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -50,6 +50,9 @@ const App = () => {
     try {
       const response = await blogService.create({ author, url, title })
       setBlogs(blogs.concat(response))
+      setErrorMessage(
+        `a new blog ${response.title} by ${response.author} added`,
+      )
     } catch (exception) {
       setErrorMessage("Failed blog creation")
       setTimeout(() => {
@@ -60,9 +63,7 @@ const App = () => {
 
   return (
     <>
-      <Notification error={errorMessage} />
-
-      {!user && <LoginForm onLogin={handleLogin} />}
+      {!user && <LoginForm onLogin={handleLogin} errorMessage={errorMessage} />}
 
       {user && (
         <p>
@@ -74,6 +75,7 @@ const App = () => {
 
       <div>
         <h2>blogs</h2>
+        <Notification message={errorMessage} />
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} />
         ))}
