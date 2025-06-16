@@ -81,8 +81,9 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <Notification message={errorMessage} />
+        {console.log(blogs)}
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
         ))}
       </div>
     </>
