@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Blog from "./components/Blog"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
 import LoginForm from "./components/loginForm"
 import Notification from "./components/Notification"
 import CreateBlog from "./components/CreateBlog"
+import Togglable from "./components/Togglable"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState("")
   const [user, setUser] = useState(null)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedUser")
@@ -53,6 +55,7 @@ const App = () => {
       setErrorMessage(
         `a new blog ${response.title} by ${response.author} added`,
       )
+      blogFormRef.current.toggleVisibility()
     } catch (exception) {
       setErrorMessage("Failed blog creation")
       setTimeout(() => {
@@ -71,7 +74,9 @@ const App = () => {
         </p>
       )}
 
-      {user && <CreateBlog handleCreation={handleCreation} />}
+      <Togglable buttonLabel="create" ref={blogFormRef}>
+        <CreateBlog handleCreation={handleCreation} />
+      </Togglable>
 
       <div>
         <h2>blogs</h2>
