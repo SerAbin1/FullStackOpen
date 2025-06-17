@@ -9,6 +9,7 @@ const setToken = (newToken) => {
 
 const getAll = async () => {
   const response = await axios.get(baseUrl)
+  console.log("og blog", response.data)
   return response.data
 }
 
@@ -23,7 +24,16 @@ const create = async (credentials) => {
 
 const updateLike = async (blog) => {
   const response = await axios.put(`${baseUrl}/${blog.id}`, blog)
+  console.log("response blog", response.data)
   return response.data
 }
 
-export default { getAll, create, setToken, updateLike }
+const deleteBlog = async (blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  await axios.delete(`${baseUrl}/${blog.id}`, config)
+}
+
+export default { getAll, create, setToken, updateLike, deleteBlog }

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogService from "../services/blogs"
 
-const Blog = ({ blog, setBlogs }) => {
+const Blog = ({ blog, setBlogs, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -30,6 +30,13 @@ const Blog = ({ blog, setBlogs }) => {
     )
   }
 
+  const handleDelete = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.deleteBlog(blog)
+      setBlogs((prev) => prev.filter((b) => b.id != blog.id))
+    }
+  }
+
   if (!visible) {
     return (
       <div style={blogStyle}>
@@ -45,6 +52,17 @@ const Blog = ({ blog, setBlogs }) => {
         likes {blog.likes} <button onClick={handleUpdate}>like</button>
         <br />
         {blog.author}
+        <br />
+        {console.log("blog", blog)}
+        {console.log("b id", blog.user.id)}
+        {console.log("u id", user.id)}
+        {blog.user && blog.user.id
+          ? blog.user.id === user.id && (
+              <button onClick={handleDelete}>remove</button>
+            )
+          : blog.user === user.id && (
+              <button onClick={handleDelete}>remove</button>
+            )}
       </div>
     )
   }
