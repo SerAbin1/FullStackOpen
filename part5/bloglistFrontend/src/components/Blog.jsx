@@ -24,7 +24,9 @@ const Blog = ({ blog, setBlogs }) => {
     })
 
     setBlogs((prev) =>
-      prev.map((blog) => (blog.id === response.id ? response : blog)),
+      prev
+        .map((blog) => (blog.id === response.id ? response : blog))
+        .sort((a, b) => b.likes - a.likes),
     )
   }
 
@@ -49,4 +51,3 @@ const Blog = ({ blog, setBlogs }) => {
 }
 
 export default Blog
-
