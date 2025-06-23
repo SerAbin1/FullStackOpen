@@ -39,14 +39,14 @@ const Blog = ({ blog, setBlogs, user }) => {
 
   if (!visible) {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} className="blog">
         {blog.title} {blog.author}
         <button onClick={toggleVisibility}>view</button>
       </div>
     )
   } else {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} className="blog">
         {blog.title} <button onClick={toggleVisibility}>hide</button>
         <br />
         likes {blog.likes} <button onClick={handleUpdate}>like</button>
