@@ -38,7 +38,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     } catch (exception) {
-      setErrorMessage("wrong username or password")
+      setErrorMessage("wrong username or password", exception)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -59,7 +59,7 @@ const App = () => {
       )
       blogFormRef.current.toggleVisibility()
     } catch (exception) {
-      setErrorMessage("Failed blog creation")
+      setErrorMessage("Failed blog creation", exception)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -83,7 +83,6 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <Notification message={errorMessage} />
-        {console.log(blogs)}
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} setBlogs={setBlogs} user={user} />
         ))}
