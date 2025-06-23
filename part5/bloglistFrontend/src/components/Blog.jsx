@@ -53,11 +53,10 @@ const Blog = ({ blog, setBlogs, user }) => {
         <br />
         {blog.author}
         <br />
-        {console.log("blog", blog)}
-        {console.log("b id", blog.user.id)}
-        {console.log("u id", user.id)}
-        {blog.user && blog.user.id
-          ? blog.user.id === user.id && (
+        {blog.url}
+        <br />
+        {blog.user && blog.user?.id
+          ? blog.user?.id === user.id && (
               <button onClick={handleDelete}>remove</button>
             )
           : blog.user === user.id && (
