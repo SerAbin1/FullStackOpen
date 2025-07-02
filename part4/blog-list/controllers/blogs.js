@@ -53,6 +53,7 @@ blogRouter.put("/:id", async (request, response) => {
     request.body,
     { new: true },
   )
+  console.log("new blog", newBlog)
   response.status(200).json(newBlog)
 })
 
