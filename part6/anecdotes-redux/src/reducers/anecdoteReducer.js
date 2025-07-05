@@ -1,3 +1,5 @@
+import { act } from "react"
+
 const anecdotesAtStart = [
   "If it hurts, do it more often",
   "Adding manpower to a late software project makes it later!",
@@ -31,10 +33,26 @@ const reducer = (state = initialState, action) => {
       return state.map((anecdote) =>
         anecdote.id !== id ? anecdote : newAnecdote,
       )
+    case "NEW_ANECDOTE":
+      return [...state, action.payload]
     default:
       return state
   }
 }
 
-export default reducer
+export const createAnecdote = (content) => {
+  return {
+    type: "NEW_ANECDOTE",
+    payload: asObject(content),
+  }
+}
 
+export const vote = (id) => {
+  return {
+    type: "VOTE",
+    payload: {
+      id,
+    },
+  }
+}
+export default reducer
