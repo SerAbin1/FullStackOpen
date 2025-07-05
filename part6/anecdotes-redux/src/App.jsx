@@ -7,8 +7,6 @@ const App = () => {
   const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes)
   const dispatch = useDispatch()
 
-  
-
   return (
     <div>
       <h2>Anecdotes</h2>
@@ -21,7 +19,7 @@ const App = () => {
           </div>
         </div>
       ))}
-      <AnecdoteForm /> 
+      <AnecdoteForm />
     </div>
   )
 }
