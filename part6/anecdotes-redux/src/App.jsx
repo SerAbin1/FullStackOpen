@@ -9,7 +9,7 @@ import { useEffect } from "react"
 const App = () => {
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(initializeAnecdotes)
+    dispatch(initializeAnecdotes())
   }, [])
 
   return (
