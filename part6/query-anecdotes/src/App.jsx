@@ -8,7 +8,6 @@ const App = () => {
   const result = useQuery({
     queryKey: ["anecdotes"],
     queryFn: getAnecdotes,
-    retry: false
   })
 
   if (result.isLoading) {
